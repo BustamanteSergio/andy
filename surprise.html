@@ -57,7 +57,7 @@
                         <div class="progress-bar absolute bottom-0 left-0"></div>
                     </div>
                     <div class="h-full flex items-center justify-center">
-                        <p class="text-gray-800 text-center">VALIDO PARA UNA LENCERIA A ELECCION TUYA</p>
+                        <p class="text-gray-800 text-center">VALIDO PARA UN VESTIDO/LENCERIA/CONJUNTO A ELECCION TUYA</p>
                     </div>
                 </div>
             </div>
@@ -69,7 +69,7 @@
                         <div class="progress-bar absolute bottom-0 left-0"></div>
                     </div>
                     <div class="h-full flex items-center justify-center">
-                        <p class="text-gray-800 text-center">VALIDO PARA UN 1KG DE ASAI</p>
+                        <p class="text-gray-800 text-center">VALIDO PARA UN COLLARCITO, ARETE, MANILLA, CHARM DE LA JOYERIA QUE QUIERAS</p>
                     </div>
                 </div>
             </div>
@@ -92,23 +92,19 @@
                     let clicks = parseInt(this.dataset.clicks) + 1;
                     this.dataset.clicks = clicks;
                     
-                    // Update progress bar
                     const progressBar = this.querySelector('.progress-bar');
                     const progressPercentage = (clicks / requiredClicks) * 100;
                     progressBar.style.width = `${progressPercentage}%`;
 
-                    // Add some visual feedback on click
                     box.style.transform = 'scale(0.98)';
                     setTimeout(() => box.style.transform = 'scale(1)', 100);
 
                     if (clicks >= requiredClicks) {
-                        // Remove blur with a smooth transition
                         this.style.backdropFilter = 'blur(0px)';
                         progressBar.style.opacity = '0';
                         this.style.cursor = 'default';
                         this.style.pointerEvents = 'none';
                     } else {
-                        // Calculate blur amount
                         const blurAmount = 10 - ((clicks / requiredClicks) * 10);
                         this.style.backdropFilter = `blur(${blurAmount}px)`;
                     }
