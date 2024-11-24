@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FELIZ 6 MESES MI AMOR ❤️</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .fade-in {
+            animation: fadeIn 2s ease-in;
+        }
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+        .floating {
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+        .blur-box {
+            backdrop-filter: blur(10px);
+            transition: backdrop-filter 0.5s ease;
+        }
+        .progress-bar {
+            width: 0%;
+            height: 4px;
+            background-color: #ec4899;
+            transition: width 0.2s ease;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-pink-100 to-purple-200 min-h-screen p-4">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-4xl font-bold text-pink-600 mb-8 text-center floating">🌟 FELIZ 6 MESES MI AMOR 🌟</h1>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Box 1 -->
+            <div class="relative group">
+                <div class="bg-white rounded-lg shadow-lg p-6 h-80 overflow-hidden">
+                    <div class="blur-box absolute inset-0 rounded-lg cursor-pointer" data-clicks="0">
+                        <div class="progress-bar absolute bottom-0 left-0"></div>
+                    </div>
+                    <div class="h-full flex items-center justify-center">
+                        <p class="text-gray-800 text-center">VALIDO PARA UNA CENA SUSHI, TODO PATROCINADO POR TU SERVIDOR</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Box 2 -->
+            <div class="relative group">
+                <div class="bg-white rounded-lg shadow-lg p-6 h-80 overflow-hidden">
+                    <div class="blur-box absolute inset-0 rounded-lg cursor-pointer" data-clicks="0">
+                        <div class="progress-bar absolute bottom-0 left-0"></div>
+                    </div>
+                    <div class="h-full flex items-center justify-center">
+                        <p class="text-gray-800 text-center">VALIDO PARA UNA LENCERIA A ELECCION TUYA</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Box 3 -->
+            <div class="relative group">
+                <div class="bg-white rounded-lg shadow-lg p-6 h-80 overflow-hidden">
+                    <div class="blur-box absolute inset-0 rounded-lg cursor-pointer" data-clicks="0">
+                        <div class="progress-bar absolute bottom-0 left-0"></div>
+                    </div>
+                    <div class="h-full flex items-center justify-center">
+                        <p class="text-gray-800 text-center">VALIDO PARA UN 1KG DE ASAI</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-8">
+            <a href="index.html" class="text-pink-600 hover:text-pink-800 transition-colors duration-300">
+                ← Vuelve al inicio
+            </a>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const blurBoxes = document.querySelectorAll('.blur-box');
+            const requiredClicks = 20;
+
+            blurBoxes.forEach(box => {
+                box.addEventListener('click', function() {
+                    let clicks = parseInt(this.dataset.clicks) + 1;
+                    this.dataset.clicks = clicks;
+                    
+                    // Update progress bar
+                    const progressBar = this.querySelector('.progress-bar');
+                    const progressPercentage = (clicks / requiredClicks) * 100;
+                    progressBar.style.width = `${progressPercentage}%`;
+
+                    // Add some visual feedback on click
+                    box.style.transform = 'scale(0.98)';
+                    setTimeout(() => box.style.transform = 'scale(1)', 100);
+
+                    if (clicks >= requiredClicks) {
+                        // Remove blur with a smooth transition
+                        this.style.backdropFilter = 'blur(0px)';
+                        progressBar.style.opacity = '0';
+                        this.style.cursor = 'default';
+                        this.style.pointerEvents = 'none';
+                    } else {
+                        // Calculate blur amount
+                        const blurAmount = 10 - ((clicks / requiredClicks) * 10);
+                        this.style.backdropFilter = `blur(${blurAmount}px)`;
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
