@@ -2,24 +2,38 @@ document.addEventListener('DOMContentLoaded', function() {
     // Populate memories with independent images
     const memories = document.getElementById('memories');
     const memoryImages = [
-        { src: './offlinepics/1.jpg', alt: 'Nuestro mini viaje a Tarata' },
-        { src: './offlinepics/2.jpg', alt: 'Nuestra emocion y mis nervios' },
-        { src: './offlinepics/3.jpg', alt: 'Nuestro matrimonio de alacitas' },
+        { src: './offlinepics/01.jpg', alt: 'Nuestra foto cuando aun eramos amiguitos' },
+        { src: './offlinepics/1.jpg', alt: 'Nuestra foto cuando aun daba nervios decirnos "amor"' },
+        { src: './offlinepics/2.jpg', alt: 'Nuestra foto que seguro no quieres que suba hshshs'},
+        { src: './offlinepics/3.jpg', alt:  'Nuestra foto que siempre pienso'},
 
-        { src: './offlinepics/4.jpg', alt: 'Nuestro amor es el reflejo de los momentos más felices que compartimos juntos' },
-        { src: './offlinepics/5.jpg', alt: 'Nuestros besos que paran el mundo' },
-        { src: './offlinepics/6.jpg', alt: 'Nuestra primera cenita como pareja' },
+        { src: './offlinepics/4.jpg', alt:  'Nuestra foto mas goals'},
+        { src: './offlinepics/5.jpg', alt:  'Nuestra foto a la que llamo "casita"'},
+        { src: './offlinepics/6.jpg', alt:  'Nuestros ojos siendo quemados por el flash'},
 
-        { src: './offlinepics/7.jpg', alt: 'Nuestros amigos diciendo "mis papis"' },
-        { src: './offlinepics/8.jpg', alt: 'Nuestra foto mas instagrameable' },
-        { src: './offlinepics/9.jpg', alt: 'Nuestros ojos siendo quemados por el flash' },
+        { src: './offlinepics/7.jpg', alt:  'Nuestra foto mas instagrameable'},
+        { src: './offlinepics/8.jpg', alt: 'Nuestros amigos diciendo "mis papis"' },
+        { src: './offlinepics/9.jpg', alt: 'Nuestra primera cenita como pareja' },
 
-        { src: './offlinepics/10.jpg', alt: 'Nuestra foto a la que llamo "casita"' },
-        { src: './offlinepics/11.jpg', alt: 'Nuestra foto mas goals' },
-        { src: './offlinepics/12.jpg', alt: 'Nuestra foto que siempre pienso' },
+        { src: './offlinepics/10.jpg', alt:  'Nuestros besos que paran el mundo'},
+        { src: './offlinepics/11.jpg', alt:  'Nuestro amor es el reflejo de los momentos más felices que compartimos juntos'},
+        { src: './offlinepics/12.jpg', alt:  'Nuestro matrimonio de alacitas'},
 
-        { src: './offlinepics/13.jpg', alt: 'Nuestra foto que seguro no quieres que suba hshshs' },
-        { src: './offlinepics/14.jpg', alt: 'Nuestra foto cuando aun daba nervios decirnos "amor"' }
+        { src: './offlinepics/13.jpg', alt:  'Nuestra emocion y mis nervios'},
+        { src: './offlinepics/14.jpg', alt: 'Nuestro mini viaje a Tarata' },
+
+        { src: './offlinepics/15.jpg', alt:  'Nuestra post-Halloween'},
+        { src: './offlinepics/16.jpg', alt: 'Nuestro post-Halloween ya borrachos' },
+        { src: './offlinepics/17.jpg', alt:  'Nuestra primera boda'},
+        { src: './offlinepics/18.jpg', alt: 'Nuestro amor, raro pero bello hshshs' },
+        { src: './offlinepics/19.jpg', alt:  'Nuestro cariño'},
+        { src: './offlinepics/20.jpg', alt: 'Nuestro primer San Valentin' },
+        { src: './offlinepics/21.jpg', alt:  'Nuestras patitas'},
+        { src: './offlinepics/22.jpg', alt: 'Nuestro primer carnaval' },
+        { src: './offlinepics/23.jpg', alt:  'Nuestros momentos fitness'},
+        { src: './offlinepics/24.png', alt: 'Nuestra familIA hshshs' },
+
+
     ];
 
     memoryImages.forEach(image => {
