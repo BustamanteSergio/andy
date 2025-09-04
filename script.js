@@ -24,14 +24,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
         { src: './offlinepics/15.jpg', alt:  'Nuestra post-Halloween'},
         { src: './offlinepics/16.jpg', alt: 'Nuestro post-Halloween ya borrachos' },
-        { src: './offlinepics/17.jpg', alt:  'Nuestra primera boda'},
+        { src: './offlinepics/17.jpg', alt:  'Nuestra primera graduacion'},
+        { src: './offlinepics/25.jpg', alt:  'Nuestra primera boda'},
         { src: './offlinepics/18.jpg', alt: 'Nuestro amor, raro pero bello hshshs' },
         { src: './offlinepics/19.jpg', alt:  'Nuestro cariño'},
         { src: './offlinepics/20.jpg', alt: 'Nuestro primer San Valentin' },
         { src: './offlinepics/21.jpg', alt:  'Nuestras patitas'},
         { src: './offlinepics/22.jpg', alt: 'Nuestro primer carnaval' },
         { src: './offlinepics/23.jpg', alt:  'Nuestros momentos fitness'},
+        { src: './offlinepics/29.jpg', alt: 'Nuestras citas en crisis' },
         { src: './offlinepics/24.png', alt: 'Nuestra familIA hshshs' },
+        { src: './offlinepics/27.jpg', alt: 'Nuestra linda salida' },
+        { src: './offlinepics/26.jpg', alt: 'Nuestra primera aventura' },
+        { src: './offlinepics/28.jpg', alt: 'Nuestras reconciliadas' },
+
+
+
 
 
     ];
