@@ -1,0 +1,482 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Al Despertar</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800;900&family=Instrument+Serif:ital@0;1&display=swap">
+<style>
+  :root{
+    --ink:#0a0c1e;
+    --gold:#f3c07a;
+    --dawn:#ff8a5c;
+    --paper:#f6efe2;
+    --dim:rgba(246,239,226,.55);
+  }
+  html,body{height:100%;margin:0;overflow:hidden;background:var(--ink);}
+  *{box-sizing:border-box}
+  body{
+    color:var(--paper);
+    font-family:'Unbounded',system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation-duration:.001ms !important;transition-duration:.001ms !important}
+  }
+
+  #sky{position:fixed;inset:0;z-index:0;width:100%;height:100%}
+
+  .bg-layer{
+    position:fixed;inset:-5%;z-index:1;
+    background-size:cover;background-position:center;
+    filter:blur(46px) brightness(.55) saturate(1.15);
+    transform:scale(1.15);
+    opacity:0;transition:opacity 1.5s ease;
+  }
+  .scrim{
+    position:fixed;inset:0;z-index:2;pointer-events:none;
+    background:
+      linear-gradient(180deg, rgba(6,7,18,.55) 0%, rgba(6,7,18,.15) 30%, rgba(6,7,18,.35) 65%, rgba(6,7,18,.85) 100%);
+  }
+
+  .photo-card{
+    position:fixed;z-index:2;
+    top:calc(6% + env(safe-area-inset-top,0px));left:50%;
+    transform:translate(-50%,0) rotate(var(--rot,-3deg)) scale(.94);
+    background:#faf5ec;padding:14px 14px 32px;border-radius:4px;
+    box-shadow:0 24px 60px -14px rgba(0,0,0,.65);
+    max-width:92vw;max-height:64vh;
+    opacity:0;pointer-events:none;
+    transition:opacity .5s ease, transform .5s ease;
+  }
+  .photo-card.show{opacity:1;transform:translate(-50%,0) rotate(var(--rot,-3deg)) scale(1)}
+  .photo-card img{
+    display:block;max-width:100%;max-height:calc(64vh - 46px);width:auto;height:auto;
+    object-fit:contain;border-radius:1px;
+  }
+
+  #stage{position:fixed;inset:0;z-index:3;display:flex;flex-direction:column;}
+
+  .lyric-zone{
+    flex:1;display:flex;padding:20px 8vw;position:relative;
+  }
+  .lyric-zone .line{
+    position:absolute;left:8vw;right:8vw;bottom:9vh;text-align:center;
+    text-wrap:balance;z-index:5;
+  }
+  .line.bold{
+    font-family:'Unbounded',sans-serif;font-weight:800;text-transform:uppercase;
+    font-size:clamp(1.6rem,7.5vw,3.4rem);line-height:1.08;letter-spacing:.01em;
+    color:var(--paper);
+    text-shadow:0 6px 30px rgba(0,0,0,.45);
+  }
+  .line.tender{
+    font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;
+    font-size:clamp(2rem,9vw,4.2rem);line-height:1.1;color:var(--gold);
+    text-shadow:0 6px 30px rgba(0,0,0,.5);
+  }
+  .line.intro{
+    font-family:'Instrument Serif',serif;font-style:italic;color:var(--dim);
+    font-size:clamp(1.4rem,6vw,2rem);
+  }
+
+  @keyframes popIn{0%{opacity:0;transform:scale(.7) rotate(-3deg)}60%{opacity:1;transform:scale(1.06) rotate(1deg)}100%{opacity:1;transform:scale(1) rotate(0)}}
+  @keyframes slideUpIn{from{opacity:0;transform:translateY(46px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes slideSideIn{from{opacity:0;transform:translateX(-60px)}to{opacity:1;transform:translateX(0)}}
+  @keyframes revealIn{0%{opacity:0;letter-spacing:.4em}100%{opacity:1;letter-spacing:.01em}}
+  .anim-pop{animation:popIn .55s cubic-bezier(.2,.9,.3,1.3) both}
+  .anim-slideup{animation:slideUpIn .5s ease-out both}
+  .anim-slideside{animation:slideSideIn .5s ease-out both}
+  .anim-reveal{animation:revealIn .6s ease-out both}
+  .line.leaving{opacity:0;transform:scale(.92);transition:opacity .2s ease, transform .2s ease}
+
+  .bottom-bar{
+    padding:0 18px calc(16px + env(safe-area-inset-bottom,0px));
+    display:flex;flex-direction:column;gap:8px;
+  }
+  .progress{
+    height:3px;border-radius:99px;background:rgba(246,239,226,.2);
+    cursor:pointer;position:relative;
+  }
+  .progress-fill{
+    position:absolute;left:0;top:0;bottom:0;border-radius:99px;
+    background:linear-gradient(90deg,var(--dawn),var(--gold));width:0%;
+  }
+  .controls-row{display:flex;align-items:center;gap:12px}
+  .play-btn{
+    flex:none;width:40px;height:40px;border-radius:50%;border:none;
+    background:var(--paper);color:var(--ink);cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .play-btn svg{width:16px;height:16px}
+  .times{font-size:.66rem;color:var(--dim);font-variant-numeric:tabular-nums;flex:none}
+  .now-hint{flex:1;font-size:.66rem;color:var(--dim);text-align:right;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+  #tapStart{
+    position:fixed;inset:0;z-index:6;display:none;
+    align-items:center;justify-content:center;flex-direction:column;gap:14px;
+    background:rgba(6,7,18,.55);backdrop-filter:blur(4px);cursor:pointer;
+    text-align:center;padding:24px;
+  }
+  #tapStart.show{display:flex}
+  #tapStart p{
+    font-family:'Instrument Serif',serif;font-style:italic;font-size:1.6rem;
+    color:var(--paper);margin:0;
+  }
+  #tapStart span{font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
+</style>
+</head>
+<body>
+
+<canvas id="sky"></canvas>
+<div class="bg-layer" id="bgA"></div>
+<div class="bg-layer" id="bgB"></div>
+<div class="scrim"></div>
+
+<div id="stage">
+  <div class="photo-card" id="photoCard"><img id="photoCardImg" alt=""></div>
+  <div class="lyric-zone" id="lyricZone"></div>
+  <div class="bottom-bar">
+    <div class="progress" id="progress"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="controls-row">
+      <button class="play-btn" id="playBtn" type="button" aria-label="reproducir"></button>
+      <span class="times" id="tCurrent">0:00</span>
+      <span class="now-hint" id="nowHint"></span>
+    </div>
+  </div>
+</div>
+
+<div id="tapStart">
+  <span>toca la pantalla</span>
+  <p>para despertar conmigo</p>
+</div>
+
+<audio id="audio" src="cancion.m4a" preload="auto"></audio>
+
+<script>
+(function(){
+  "use strict";
+
+  var LYRICS = [
+    [5.01,"Al despertar"],
+    [7.74,"Sentirás mis besos de amor"],
+    [14.22,"Al despertar"],
+    [16.87,"Tú sabrás que solo he sido yo"],
+    [23.31,"Quien te amó"],
+    [26.45,"Quien devolvió la risa en tu mirar"],
+    [33.08,"Al despertar"],
+    [35.53,"Ya no sabrás si es un sueño aún"],
+    [42.09,"Porque sentirás"],
+    [44.75,"Las mariposas del amor"],
+    [48.46,"Otra vez"],
+    [51.11,"Y te juro por mi vida"],
+    [53.48,"Que jamás me cansaré"],
+    [55.47,"De mirarte"],
+    [60.09,"De besarte"],
+    [64.11,"De hacer las cosas bellas"],
+    [67.31,"De llevarte a las estrellas"],
+    [69.42,"De ser tuyo"],
+    [74.09,"De amarte"],
+    [78.56,"Y de hacer lo que tú quieras"],
+    [81.32,"De tenerte para siempre"],
+    [83.63,"Junto a mí"],
+    [95.55,"Sentirás el amor"],
+    [99.50,"Corriendo por tus venas"],
+    [104.51,"El calor la pasión"],
+    [108.04,"Que sentías tan perdido en ti"],
+    [114.00,"Y te juro por mi vida"],
+    [116.34,"Que jamás me cansaré"],
+    [118.52,"De mirarte"],
+    [123.17,"De besarte"],
+    [127.11,"Y de hacer las cosas bellas"],
+    [130.14,"De llevarte a las estrellas"],
+    [132.63,"De ser tuyo"],
+    [136.93,"De amarte y de hacer lo que tú quieras"],
+    [144.01,"De tenerte para siempre"],
+    [146.74,"De mirarte"],
+    [150.88,"De besarte"],
+    [154.70,"Y de hacer las cosas bellas"],
+    [157.98,"De llevarte a las estrellas"],
+    [160.28,"De ser tuyo"],
+    [164.65,"De amarte"],
+    [168.84,"Y de hacer lo que tú quieras"],
+    [171.89,"De tenerte para siempre"],
+    [175.14,"Junto a mí"]
+  ];
+  var DURATION = 191;
+
+  var SLOT_RULES = [
+    [/despertar/i,"despertar"],
+    [/risa/i,"risa"],
+    [/mirarte/i,"mirarte"],
+    [/besarte/i,"besarte"],
+    [/estrellas/i,"estrellas"],
+    [/venas/i,"venas"],
+    [/para siempre/i,"siempre"]
+  ];
+  var TENDER_SLOTS = {mirarte:1, besarte:1, estrellas:1, siempre:1};
+
+  var SLOTS = {
+    despertar:{label:"Una mañana cualquiera, juntos"},
+    risa:{label:"Esa risa que reconoces al instante"},
+    mirarte:{label:"Una mirada que lo dice todo"},
+    besarte:{label:"Un beso para recordar"},
+    estrellas:{label:"Una noche bajo las estrellas"},
+    venas:{label:"Ese momento cercano, de piel"},
+    siempre:{label:"La foto de un para siempre"}
+  };
+
+  // fotos ya elegidas de nuestro álbum (offlinepics/), una por momento
+  var PHOTOS = {
+    despertar: ["../offlinepics/5.jpg", "../offlinepics/9.jpg", "../offlinepics/1.jpg"],
+    risa:      ["../offlinepics/15.jpg", "../offlinepics/16.jpg", "../offlinepics/8.jpg"],
+    mirarte:   ["../offlinepics/6.jpg", "../offlinepics/13.jpg", "../offlinepics/19.jpg"],
+    besarte:   ["../offlinepics/10.jpg", "../offlinepics/20.jpg", "../offlinepics/3.jpg"],
+    estrellas: ["../offlinepics/14.jpg", "../offlinepics/22.jpg", "../offlinepics/17.jpg"],
+    venas:     ["../offlinepics/21.jpg", "../offlinepics/4.jpg", "../offlinepics/23.jpg"],
+    siempre:   ["../offlinepics/11.jpg", "../offlinepics/28.jpg", "../offlinepics/12.jpg"]
+  };
+
+  var lineSlots = [];
+  (function(){
+    var current = null;
+    LYRICS.forEach(function(entry){
+      var matched = null;
+      for (var r=0;r<SLOT_RULES.length;r++){
+        if (SLOT_RULES[r][0].test(entry[1])){ matched = SLOT_RULES[r][1]; break; }
+      }
+      if (matched) current = matched;
+      lineSlots.push(current);
+    });
+  })();
+
+  var windows = [];
+  (function(){
+    for (var i=0;i<LYRICS.length;i++){
+      var isLabel = SLOT_RULES.some(function(r){ return r[0].test(LYRICS[i][1]); });
+      if (isLabel){
+        var end = DURATION;
+        for (var j=i+1;j<LYRICS.length;j++){
+          var laterIsLabel = SLOT_RULES.some(function(r){ return r[0].test(LYRICS[j][1]); });
+          if (laterIsLabel){ end = LYRICS[j][0]; break; }
+        }
+        windows.push({start:LYRICS[i][0], end:end, slot:lineSlots[i]});
+      }
+    }
+  })();
+  function slotAt(t){
+    for (var i=0;i<windows.length;i++) if (t>=windows[i].start && t<windows[i].end) return windows[i].slot;
+    return null;
+  }
+
+  // ---------- starfield ----------
+  var canvas = document.getElementById("sky");
+  var ctx = canvas.getContext("2d");
+  var reducedMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var stars = [];
+  function resizeCanvas(){ canvas.width = innerWidth; canvas.height = innerHeight; }
+  resizeCanvas();
+  window.addEventListener("resize", resizeCanvas);
+  for (var s=0;s<90;s++) stars.push({x:Math.random(), y:Math.random()*0.8, r:Math.random()*1.4+0.3, phase:Math.random()*6.28, speed:0.6+Math.random()*1.2});
+  var skyProgress = 0.08;
+  function drawSky(time){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    var alphaBase = 1 - skyProgress*0.85;
+    stars.forEach(function(st){
+      var tw = reducedMotion ? 0.7 : 0.55+0.45*Math.sin(time*0.001*st.speed+st.phase);
+      ctx.globalAlpha = Math.max(0, alphaBase*tw);
+      ctx.fillStyle = "#f6efe2";
+      ctx.beginPath(); ctx.arc(st.x*canvas.width, st.y*canvas.height, st.r, 0, 6.28); ctx.fill();
+    });
+    ctx.globalAlpha = 1;
+    var sunY = canvas.height*(0.95-skyProgress*0.55);
+    var sunR = 60+skyProgress*100;
+    var grad = ctx.createRadialGradient(canvas.width*0.5, sunY, 0, canvas.width*0.5, sunY, sunR);
+    grad.addColorStop(0, "rgba(255,180,120,"+(0.08+skyProgress*0.3)+")");
+    grad.addColorStop(1, "rgba(255,180,120,0)");
+    ctx.fillStyle = grad; ctx.fillRect(0,0,canvas.width,canvas.height);
+    if (!reducedMotion) requestAnimationFrame(drawSky);
+  }
+  requestAnimationFrame(drawSky);
+
+  // ---------- background photo crossfade ----------
+  var bgA = document.getElementById("bgA"), bgB = document.getElementById("bgB");
+  var frontIsA = true, currentBgUrl = null;
+  function setBackground(url){
+    if (url === currentBgUrl) return;
+    currentBgUrl = url;
+    var back = frontIsA ? bgB : bgA;
+    var front = frontIsA ? bgA : bgB;
+    back.style.backgroundImage = url ? 'url("'+url+'")' : "none";
+    back.style.opacity = url ? 1 : 0;
+    front.style.opacity = 0;
+    frontIsA = !frontIsA;
+  }
+
+  function hashRotation(str){
+    var h = 0;
+    for (var i=0;i<str.length;i++) h = (h*31 + str.charCodeAt(i)) | 0;
+    return (Math.abs(h) % 13) - 6;
+  }
+
+  var photoCard = document.getElementById("photoCard");
+  var photoCardImg = document.getElementById("photoCardImg");
+  var lastPolaroidUrl = null;
+  function showPhoto(url){
+    if (url === lastPolaroidUrl) return;
+    lastPolaroidUrl = url;
+    if (!url){ photoCard.classList.remove("show"); return; }
+    photoCard.classList.remove("show");
+    setTimeout(function(){
+      photoCardImg.src = url;
+      photoCard.style.setProperty("--rot", hashRotation(url)+"deg");
+      photoCard.classList.add("show");
+    }, 260);
+  }
+
+  function shuffle(arr){
+    var a = arr.slice();
+    for (var i=a.length-1;i>0;i--){
+      var j = Math.floor(Math.random()*(i+1));
+      var tmp=a[i]; a[i]=a[j]; a[j]=tmp;
+    }
+    return a;
+  }
+
+  var slotRotationState = {};
+  function nextPhotoForSlot(key){
+    var urls = PHOTOS[key] || [];
+    if (!urls.length) return null;
+    var st = slotRotationState[key];
+    if (!st || st.order.length !== urls.length){
+      st = {order: shuffle(urls.map(function(_,i){ return i; })), pos:0, lastIndex:-1};
+      slotRotationState[key] = st;
+    }
+    if (st.pos >= st.order.length){
+      var order = shuffle(urls.map(function(_,i){ return i; }));
+      if (urls.length>1 && order[0]===st.lastIndex){
+        var tmp=order[0]; order[0]=order[1]; order[1]=tmp;
+      }
+      st.order = order; st.pos = 0;
+    }
+    var idx = st.order[st.pos++];
+    st.lastIndex = idx;
+    return urls[idx];
+  }
+
+  var rotationTimer = null;
+  function clearRotation(){ if (rotationTimer){ clearInterval(rotationTimer); rotationTimer = null; } }
+  function startRotation(key){
+    clearRotation();
+    var urls = PHOTOS[key] || [];
+    if (!urls.length){ setBackground(null); showPhoto(null); return; }
+    var first = nextPhotoForSlot(key);
+    setBackground(first);
+    showPhoto(first);
+    if (urls.length > 1){
+      rotationTimer = setInterval(function(){
+        var url = nextPhotoForSlot(key);
+        setBackground(url);
+        showPhoto(url);
+      }, 4500);
+    }
+  }
+
+  // ---------- audio: autoplay with a graceful fallback ----------
+  var audio = document.getElementById("audio");
+  var tapStart = document.getElementById("tapStart");
+
+  function fmtTime(sec){ if(!isFinite(sec)||sec<0) sec=0; var m=Math.floor(sec/60), s=Math.floor(sec%60); return m+":"+(s<10?"0":"")+s; }
+
+  function setPlayIcon(playing){
+    document.getElementById("playBtn").innerHTML = playing
+      ? '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/></svg>'
+      : '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
+  }
+  setPlayIcon(false);
+
+  function attemptAutoplay(){
+    var p = audio.play();
+    if (p && p.catch){
+      p.then(function(){ setPlayIcon(true); }).catch(function(){
+        tapStart.classList.add("show");
+      });
+    }
+  }
+  attemptAutoplay();
+
+  tapStart.addEventListener("click", function(){
+    tapStart.classList.remove("show");
+    audio.play().then(function(){ setPlayIcon(true); }).catch(function(){});
+  });
+
+  document.getElementById("playBtn").addEventListener("click", function(){
+    if (audio.paused){ audio.play().then(function(){ setPlayIcon(true); }).catch(function(){}); }
+    else { audio.pause(); setPlayIcon(false); }
+  });
+  audio.addEventListener("play", function(){ setPlayIcon(true); });
+  audio.addEventListener("pause", function(){ setPlayIcon(false); });
+
+  var progress = document.getElementById("progress");
+  progress.addEventListener("click", function(e){
+    var rect = progress.getBoundingClientRect();
+    var ratio = (e.clientX-rect.left)/rect.width;
+    audio.currentTime = Math.max(0, Math.min(1,ratio))*DURATION;
+  });
+
+  // ---------- lyric rendering ----------
+  var lyricZone = document.getElementById("lyricZone");
+  var ANIMS = ["anim-pop","anim-slideup","anim-slideside","anim-reveal"];
+  var lastLineIdx = -2;
+  var lastActiveSlot = null;
+  var currentSpan = null;
+
+  function showLine(idx){
+    if (currentSpan){
+      var old = currentSpan;
+      old.classList.add("leaving");
+      setTimeout(function(){ if (old.parentNode) old.parentNode.removeChild(old); }, 220);
+    }
+    var span = document.createElement("div");
+    if (idx < 0){
+      span.className = "line intro anim-pop";
+      span.textContent = "Al Despertar";
+    } else {
+      var text = LYRICS[idx][1];
+      var slot = lineSlots[idx];
+      var tender = slot && TENDER_SLOTS[slot];
+      span.className = "line " + (tender ? "tender" : "bold") + " " + ANIMS[idx % ANIMS.length];
+      span.textContent = text;
+    }
+    lyricZone.appendChild(span);
+    currentSpan = span;
+  }
+  showLine(-1);
+
+  function raf(){
+    requestAnimationFrame(raf);
+    var t = audio.currentTime || 0;
+
+    document.getElementById("tCurrent").textContent = fmtTime(t);
+    document.getElementById("progressFill").style.width = Math.min(100, (t/DURATION)*100)+"%";
+
+    var idx = -1;
+    for (var i=0;i<LYRICS.length;i++){ if (LYRICS[i][0]<=t) idx=i; else break; }
+    if (idx !== lastLineIdx){ showLine(idx); lastLineIdx = idx; }
+
+    var slot = slotAt(t);
+    if (slot !== lastActiveSlot){
+      lastActiveSlot = slot;
+      if (slot) startRotation(slot); else { clearRotation(); setBackground(null); }
+      document.getElementById("nowHint").textContent = slot ? SLOTS[slot].label : "";
+    }
+
+    skyProgress = Math.min(1, t/DURATION);
+  }
+  requestAnimationFrame(raf);
+
+})();
+</script>
+</body>
+</html>
