@@ -227,15 +227,29 @@
     siempre:{label:"La foto de un para siempre"}
   };
 
-  // fotos ya elegidas de nuestro álbum (offlinepics/), una por momento
+  // fotos elegidas específicamente para cada momento de la canción
   var PHOTOS = {
-    despertar: ["../offlinepics/5.jpg", "../offlinepics/9.jpg", "../offlinepics/1.jpg"],
-    risa:      ["../offlinepics/15.jpg", "../offlinepics/16.jpg", "../offlinepics/8.jpg"],
-    mirarte:   ["../offlinepics/6.jpg", "../offlinepics/13.jpg", "../offlinepics/19.jpg"],
-    besarte:   ["../offlinepics/10.jpg", "../offlinepics/20.jpg", "../offlinepics/3.jpg"],
-    estrellas: ["../offlinepics/14.jpg", "../offlinepics/22.jpg", "../offlinepics/17.jpg"],
-    venas:     ["../offlinepics/21.jpg", "../offlinepics/4.jpg", "../offlinepics/23.jpg"],
-    siempre:   ["../offlinepics/11.jpg", "../offlinepics/28.jpg", "../offlinepics/12.jpg"]
+    despertar: ["fotos/despertar-1.jpeg", "fotos/despertar-2.jpeg", "fotos/despertar-3.jpeg", "fotos/despertar-4.jpeg", "fotos/despertar-5.jpeg"],
+    risa:      ["fotos/risa-1.jpeg", "fotos/risa-2.jpeg", "fotos/risa-3.jpeg", "fotos/risa-4.jpeg", "fotos/risa-5.jpeg"],
+    mirarte:   ["fotos/mirarte-1.jpeg", "fotos/mirarte-2.jpeg", "fotos/mirarte-3.jpeg", "fotos/mirarte-4.jpeg", "fotos/mirarte-5.jpeg"],
+    besarte:   ["fotos/besarte-1.jpeg", "fotos/besarte-2.jpeg", "fotos/besarte-3.jpeg", "fotos/besarte-4.jpeg", "fotos/besarte-5.jpeg"],
+    estrellas: ["fotos/estrellas-1.jpeg", "fotos/estrellas-2.jpeg", "fotos/estrellas-3.jpeg", "fotos/estrellas-4.jpeg", "fotos/estrellas-5.jpeg"],
+    venas:     ["fotos/venas-1.jpeg", "fotos/venas-2.jpeg", "fotos/venas-3.jpeg", "fotos/venas-4.jpeg", "fotos/venas-5.jpeg"],
+    siempre:   ["fotos/siempre-1.jpeg", "fotos/siempre-2.jpeg", "fotos/siempre-3.jpeg", "fotos/siempre-4.jpeg", "fotos/siempre-5.jpeg", "fotos/siempre-6.jpeg", "fotos/siempre-7.jpeg"]
+  };
+
+  // ORDEN en que salen las fotos de cada momento: son los mismos números
+  // del nombre de archivo (despertar-1.jpeg = 1, despertar-2.jpeg = 2, etc).
+  // Para cambiar cuál sale primero, solo reordena los números.
+  // Ejemplo: para que la foto 3 salga antes que la 1 y la 2, escribe [3, 1, 2, 4, 5]
+  var PHOTO_ORDER = {
+    despertar: [1, 2, 3, 4, 5],
+    risa:      [1, 2, 3, 4, 5],
+    mirarte:   [1, 2, 3, 4, 5],
+    besarte:   [1, 2, 3, 4, 5],
+    estrellas: [1, 2, 3, 4, 5],
+    venas:     [1, 2, 3, 4, 5],
+    siempre:   [1, 2, 3, 4, 5, 6, 7]
   };
 
   var lineSlots = [];
@@ -335,34 +349,19 @@
     }, 260);
   }
 
-  function shuffle(arr){
-    var a = arr.slice();
-    for (var i=a.length-1;i>0;i--){
-      var j = Math.floor(Math.random()*(i+1));
-      var tmp=a[i]; a[i]=a[j]; a[j]=tmp;
-    }
-    return a;
-  }
-
+  // recorre PHOTO_ORDER en el orden exacto que se definió arriba, y sigue
+  // avanzando (no reinicia en la foto 1) cada vez que el momento vuelve a
+  // aparecer más adelante en la canción.
   var slotRotationState = {};
   function nextPhotoForSlot(key){
     var urls = PHOTOS[key] || [];
-    if (!urls.length) return null;
+    var order = PHOTO_ORDER[key] || urls.map(function(_,i){ return i+1; });
+    if (!urls.length || !order.length) return null;
     var st = slotRotationState[key];
-    if (!st || st.order.length !== urls.length){
-      st = {order: shuffle(urls.map(function(_,i){ return i; })), pos:0, lastIndex:-1};
-      slotRotationState[key] = st;
-    }
-    if (st.pos >= st.order.length){
-      var order = shuffle(urls.map(function(_,i){ return i; }));
-      if (urls.length>1 && order[0]===st.lastIndex){
-        var tmp=order[0]; order[0]=order[1]; order[1]=tmp;
-      }
-      st.order = order; st.pos = 0;
-    }
-    var idx = st.order[st.pos++];
-    st.lastIndex = idx;
-    return urls[idx];
+    if (!st){ st = {pos:0}; slotRotationState[key] = st; }
+    var num = order[st.pos % order.length];
+    st.pos++;
+    return urls[num-1] || null;
   }
 
   var rotationTimer = null;
